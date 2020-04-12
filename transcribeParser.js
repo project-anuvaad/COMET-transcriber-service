@@ -13,7 +13,7 @@ function parseTranscription(transcription, noOfSpeakers) {
         if (!speaker_labels || !speaker_labels.segments) return [];
 
         const { segments } = speaker_labels;
-        segments.forEach((segment, index) => {
+        segments.forEach((segment) => {
             const { start_time, end_time, speaker_label } = segment;
             slidesStartEndTime.push({ start_time: parseFloat(start_time), end_time: parseFloat(end_time), speaker_label });
         });
@@ -48,7 +48,8 @@ function parseTranscription(transcription, noOfSpeakers) {
     return slidesContent
 }
 
-function parseSubtitle(subtitleText, subtitleType) {
+function parseSubtitle(subtitleText) {
+    /* eslint-disable no-control-regex */
     const parsedSubtitle =  subtitle.parse(subtitleText).map((item) => ({ ...item, speakerLabel: 'spk_1', content: `${item.text} `.replace(/[\r\n\x0B\x0C\u0085\u2028\u2029]+/g," "), startTime: item.start / 1000, endTime: item.end / 1000, items: [{start_time: item.start / 1000, end_time: item.end / 1000, type: 'pronunciation', alternatives: [{ content: `${item.text} `.replace(/[\r\n\x0B\x0C\u0085\u2028\u2029]+/g," ") }]}] }));
     console.log(parsedSubtitle);
     return parsedSubtitle;

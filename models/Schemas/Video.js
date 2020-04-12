@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const { SchemaNames } = require('./utils/schemaNames');
 
 const CONVERT_STATUS_ENUM = ['transcriping', 'cutting','failed', 'done'];
 

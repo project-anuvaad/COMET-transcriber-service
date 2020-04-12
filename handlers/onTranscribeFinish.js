@@ -17,7 +17,6 @@ const onTranscribeFinish = channel => (msg) => {
     // Change video status to proofreading
     // cleanup
     const tmpFiles = [];
-    let video;
     let transcriptionPath;
     let subtitlePath;
     let videoPath;
@@ -41,7 +40,7 @@ const onTranscribeFinish = channel => (msg) => {
         tmpFiles.push(videoPath);
         let parsedTranscription;
         if (withSubtitle) {
-            parsedTranscription = transcribeParser.parseSubtitle(fs.readFileSync(subtitlePath, { encoding: 'utf8' }), subtitleType || 'srt');
+            parsedTranscription = transcribeParser.parseSubtitle(fs.readFileSync(subtitlePath, { encoding: 'utf8' }), 'srt');
         } else { 
             parsedTranscription = transcribeParser.parseTranscription(require(transcriptionPath), numberOfSpeakers);
         }

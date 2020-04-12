@@ -1,7 +1,7 @@
 const { exec } = require('child_process');
 const fs = require('fs');
 // silence threashold in seconds
-const SILENECE_THREASHOLD = 1;
+// const SILENECE_THREASHOLD = 1;
 // slide duration threashold in seconds
 const SLIDE_THREASHOLD = 10;
 const LANG_DELIMITERS = {
@@ -9,9 +9,9 @@ const LANG_DELIMITERS = {
     'hi': '।',
 }
 
-function findNearestDotPosition(afterTime, items) {
+// function findNearestDotPosition(afterTime, items) {
 
-}
+// }
 
 function getLangDelimiter(langCode) {
     return LANG_DELIMITERS[langCode] || LANG_DELIMITERS['en'];
@@ -20,7 +20,7 @@ function getLangDelimiter(langCode) {
 function downloadFile(url, targetPath) {
     return new Promise((resolve, reject) => {
         // https://tailoredvideowiki.s3.eu-west-1.amazonaws.com/videos/1.mp4
-        exec(`curl ${url} --output ${targetPath}`, (err, stdout, stderr) => {
+        exec(`curl ${url} --output ${targetPath}`, (err) => {
             if (err) {
                 return reject(err);
             }
@@ -33,79 +33,79 @@ function downloadFile(url, targetPath) {
     })
 }
 
-function divideSpeakerSlidesByDot(slide) {
-    const itemsDuration = parseFloat(slide.items[slide.items.length - 1].end_time) - parseFloat(slide.items[0].start_time);
-    if (itemsDuration <= SLIDE_THREASHOLD) return [slide];
-    const newSlides = [];
-    slide.items.forEach((item) => {
-        item.start_time = parseFloat(item.start_time);
-        item.end_time = parseFloat(item.end_time);
-    })
-    let timeSum = slide.items[0].end_time - slide.items[0].start_time;
-    let firstItem = slide.items[0];
-    let lastItem;
-    let content = slide.items[0].alternatives[0].content;
-    slide.items.forEach((item, itemIndex) => {
-        if (item.type !== 'punctuation') {
-            timeSum += (item.end_time - item.start_time);
-        }
-        if (itemIndex === 0) return;
-        if (item.type === 'punctuation') {
-            content += `${item.alternatives[0].content}`
-        } else {
-            lastItem = item;
-            content += ` ${item.alternatives[0].content}`
-        }
-        if (item.alternatives[0].content === '.' && timeSum >= 10) {
-            newSlides.push({
-                speakerLabel: slide.speakerLabel,
-                startTime: firstItem.start_time,
-                endTime: lastItem.end_time,
-                content,
-            })
-            content = ''
-            firstItem = slide.items[itemIndex + 1];
-            timeSum = 0
-        } else if (itemIndex === (slide.items.length - 1)) {
-            newSlides.push({
-                speakerLabel: slide.speakerLabel,
-                startTime: firstItem.start_time,
-                endTime: lastItem.end_time,
-                content,
-            })
-        }
+// function divideSpeakerSlidesByDot(slide) {
+//     const itemsDuration = parseFloat(slide.items[slide.items.length - 1].end_time) - parseFloat(slide.items[0].start_time);
+//     if (itemsDuration <= SLIDE_THREASHOLD) return [slide];
+//     const newSlides = [];
+//     slide.items.forEach((item) => {
+//         item.start_time = parseFloat(item.start_time);
+//         item.end_time = parseFloat(item.end_time);
+//     })
+//     let timeSum = slide.items[0].end_time - slide.items[0].start_time;
+//     let firstItem = slide.items[0];
+//     let lastItem;
+//     let content = slide.items[0].alternatives[0].content;
+//     slide.items.forEach((item, itemIndex) => {
+//         if (item.type !== 'punctuation') {
+//             timeSum += (item.end_time - item.start_time);
+//         }
+//         if (itemIndex === 0) return;
+//         if (item.type === 'punctuation') {
+//             content += `${item.alternatives[0].content}`
+//         } else {
+//             lastItem = item;
+//             content += ` ${item.alternatives[0].content}`
+//         }
+//         if (item.alternatives[0].content === '.' && timeSum >= 10) {
+//             newSlides.push({
+//                 speakerLabel: slide.speakerLabel,
+//                 startTime: firstItem.start_time,
+//                 endTime: lastItem.end_time,
+//                 content,
+//             })
+//             content = ''
+//             firstItem = slide.items[itemIndex + 1];
+//             timeSum = 0
+//         } else if (itemIndex === (slide.items.length - 1)) {
+//             newSlides.push({
+//                 speakerLabel: slide.speakerLabel,
+//                 startTime: firstItem.start_time,
+//                 endTime: lastItem.end_time,
+//                 content,
+//             })
+//         }
 
-    })
+//     })
 
-    return newSlides;
-}
+//     return newSlides;
+// }
 
-function handleSlidesSilence(speakersSlides, videoDuration) {
-    const finalSlides = [...speakersSlides];
-    speakersSlides.forEach((subslides, subslideIndex) => {
-        subslides.forEach((slide, slideIndex) => {
-            if (slideIndex === 0 && subslideIndex !== 0) {
-                if (speakersSlides[subslideIndex -1][speakersSlides[subslideIndex -1].length - 1].endTime - slide.startTime > SLIDE_THREASHOLD) {
-                    speakersSlides[subslideIndex -1].push({
-                        startTime: speakersSlides[subslideIndex -1][speakersSlides[subslideIndex -1].length - 1].endTime,
-                        endTime: slide.startTime,
-                        content: '',
-                    })
-                } else {
-                    speakersSlides[subslideIndex -1][speakersSlides[subslideIndex -1].length - 1].endTime = slide.startTime;
-                }
-            }
-            if (slideIndex !== 0) {
-                subslides[slideIndex - 1].endTime = slide.startTime;
-            }
-        })
-    })
-    const lastSlide = speakersSlides[speakersSlides.length - 1];
-    // if (lastItem[lastItem.length - 1].endTime !== videoDuration) {
-    // }
-    lastSlide[lastSlide.length - 1].endTime = videoDuration
-    return finalSlides;
-}
+// function handleSlidesSilence(speakersSlides, videoDuration) {
+//     const finalSlides = [...speakersSlides];
+//     speakersSlides.forEach((subslides, subslideIndex) => {
+//         subslides.forEach((slide, slideIndex) => {
+//             if (slideIndex === 0 && subslideIndex !== 0) {
+//                 if (speakersSlides[subslideIndex -1][speakersSlides[subslideIndex -1].length - 1].endTime - slide.startTime > SLIDE_THREASHOLD) {
+//                     speakersSlides[subslideIndex -1].push({
+//                         startTime: speakersSlides[subslideIndex -1][speakersSlides[subslideIndex -1].length - 1].endTime,
+//                         endTime: slide.startTime,
+//                         content: '',
+//                     })
+//                 } else {
+//                     speakersSlides[subslideIndex -1][speakersSlides[subslideIndex -1].length - 1].endTime = slide.startTime;
+//                 }
+//             }
+//             if (slideIndex !== 0) {
+//                 subslides[slideIndex - 1].endTime = slide.startTime;
+//             }
+//         })
+//     })
+//     const lastSlide = speakersSlides[speakersSlides.length - 1];
+//     // if (lastItem[lastItem.length - 1].endTime !== videoDuration) {
+//     // }
+//     lastSlide[lastSlide.length - 1].endTime = videoDuration
+//     return finalSlides;
+// }
 
 // function handleSlidesSilence(speakersSlides, videoDuration) {
 //     const finalSlides = [];
@@ -165,9 +165,9 @@ function getNearestStarTime(items) {
     return items.find((i) => i.startTime).startTime;
 }
 
-function getLatestEndTime(items) {
-    return items.reverse().find(i => i.endTime).endTime;
-}
+// function getLatestEndTime(items) {
+//     return items.reverse().find(i => i.endTime).endTime;
+// }
 
 function divideSlidesIntoSubslides(slides) {
     const speakersSlides = [];
@@ -203,7 +203,7 @@ function divideSlidesIntoSubslides(slides) {
                 subSlides.push({ ...subSlide, content: subSlide.content.trim(), duration: (subSlide.endTime - subSlide.startTime) * 1000 });
                 subSlide = {
                     startTime: nextItem.startTime || 0,
-                    endTime: nextItem.endTime || startTime,
+                    endTime: nextItem.endTime,
                     content: getItemContent(nextItem),
                     speakerLabel: nextItem.speakerLabel,
                 }
