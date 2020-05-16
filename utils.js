@@ -1,5 +1,7 @@
 const { exec } = require('child_process');
 const fs = require('fs');
+const async = require('async');
+const uuid = require('uuid');
 // silence threashold in seconds
 // const SILENECE_THREASHOLD = 1;
 // slide duration threashold in seconds
@@ -375,7 +377,7 @@ function formatCutTime(seconds) {
     if (minutes < 10) { minutes = "0" + minutes; }
     if (seconds < 10) { seconds = "0" + seconds; }
     let time = hours + ':' + minutes + ':' + seconds;
-    if ((parseFloat(seconds) === seconds || parseFloat(seconds) === 0) && String(seconds).indexOf('.') === -1) {
+    if ((parseFloat(seconds) === parseFloat(seconds) || parseFloat(seconds) === 0) && String(seconds).indexOf('.') === -1) {
         time += '.000';
     }
     if (time.length < 12) {
@@ -417,8 +419,43 @@ function extractAudioFromVideo(videoPath, targetPath) {
         })
     })
 }
+
+function cutSlidesIntoVideos(slides, videoPath) {
+    return new Promise((resolve, reject) => {
+        const videoCuts = [];
+        slides.forEach((subslide) => {
+            videoCuts.push((cb) => {
+                const targetPath = `tmp/${uuid()}-${uuid()}.${getFileExtension(videoPath)}`;
+                // const targetPath = `tmp/${index}-${uuid()}.${videoPath.split('.').pop()}`;
+                cutVideo(videoPath, targetPath, subslide.startTime, subslide.endTime - subslide.startTime)
+                    .then(() => {
+                        cb(null, { ...subslide, video: targetPath })
+                    })
+                    .catch(cb);
+            })
+        })
+
+        async.series(videoCuts, (err, result) => {
+            if (err) return reject(err);
+            return resolve(result);
+        })
+    })
+}
+
+function cutVideo(videoPath, targetPath, start, end) {
+    return new Promise((resolve, reject) => {
+        const command = `ffmpeg -y -ss ${formatCutTime(start)} -i ${videoPath} -t ${end} ${targetPath}`;
+        exec(command, (err) => {
+            if (err) return reject(err);
+            if (!fs.existsSync(targetPath)) return reject(new Error('Something went wrong'));
+            return resolve(targetPath);
+        })
+    })
+}
+
 module.exports = {
     formatCutTime,
+    cutSlidesIntoVideos,
     getRemoteFileDuration,
     formatTranscribedSlidesToCut,
     downloadFile,
