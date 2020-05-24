@@ -53,9 +53,9 @@ const onTranscribeFinish = channel => (msg) => {
     })
     .then((duration) => {
         console.log('done');
-        utils.cleanupFiles(tmpFiles);
-        channel.sendToQueue(queues.TRANSCRIBE_VIDEO_FINISHED_QUEUE, new Buffer(JSON.stringify({ videoId, duration, slides: formattedSlides, speakersProfile: utils.getSpeakersFromSlides(formattedSlides), })));
+        channel.sendToQueue(queues.TRANSCRIBE_VIDEO_FINISHED_QUEUE, new Buffer(JSON.stringify({ videoId, duration, slides: formattedSlides, speakersProfile: utils.getSpeakersFromSlides(formattedSlides), transcriptionUrl, transcription: require(transcriptionPath) })));
         videoHandler.update({ videoId }, { status: 'done' })
+        utils.cleanupFiles(tmpFiles);
         channel.ack(msg);
     })
     .catch(err => {
