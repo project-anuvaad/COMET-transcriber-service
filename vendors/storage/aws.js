@@ -1,10 +1,10 @@
 const AWS = require('aws-sdk')
-const { accessKeyId, secretAccessKey, bucketName } = require('./config');
+const { accessKeyId, secretAccessKey, bucketName, defaultRegion } = require('./config');
 
 const S3 = new AWS.S3({
     accessKeyId,
     secretAccessKey,
-    region: 'eu-west-1',
+    region: defaultRegion,
 })
 function saveFile(directoryName, fileName, fileStream) {
     return new Promise((resolve, reject) => {

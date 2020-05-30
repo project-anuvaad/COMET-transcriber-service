@@ -1,9 +1,9 @@
 const AWS = require('aws-sdk');
 const uuid = require('uuid').v4;
-const { accessKeyId, secretAccessKey, transcribeBucketName } = require('./config');
+const { accessKeyId, secretAccessKey, defaultRegion, transcribeBucketName } = require('./config');
 
 const transcribeService = new AWS.TranscribeService({
-    region: 'eu-west-1',
+    region: defaultRegion,
     apiVersion: '2017-10-26',
     accessKeyId,
     secretAccessKey,
