@@ -20,7 +20,6 @@ build-master:
     - apk upgrade -f
     - curl -o build.sh https://tailoredvideowiki.s3-eu-west-1.amazonaws.com/static/ci-cd/build.sh
     - chmod +X build.sh
-    - echo $AWS_KEYS_FILE_BASE64 | base64 -d > aws_creds
     - source build.sh $AWS_ECR_ACCOUNT_URL videowiki transcriber-service
   only:
     - master
