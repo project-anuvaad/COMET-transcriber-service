@@ -11,7 +11,8 @@ function saveFile(directoryName, fileName, fileStream) {
         S3.upload({
             Key: `${directoryName}/${fileName}`,
             Bucket: bucketName,
-            Body: fileStream
+            Body: fileStream,
+            ACL: 'public-read',
         }, (err, data) => {
             if (err) return reject(err);
             return resolve({ url: data.Location, data });
