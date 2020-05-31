@@ -1,4 +1,5 @@
 const CronJob = require('cron').CronJob;
+const { updateItemPermissions } = require('./vendors/storage');
 
 const { queues } = require('./constants');
 const { TRANSCRIBE_FINISH_QUEUE } = queues;
@@ -33,7 +34,13 @@ const breakTranscribedIntoSlidesJob = new CronJob({
                     if (status && status.toLowerCase() === 'completed') {
                         console.log(data);
                         const transcriptionUrl = data.TranscriptionJob.Transcript.TranscriptFileUri;
-                        videoHandler.updateById(video._id, { status: 'cutting', transcriptionUrl: data.TranscriptionJob.Transcript.TranscriptFileUri })
+                        const parts = transcriptionUrl.split('/');
+                        const fileName = parts.pop();
+                        const directoryName = parts.pop()
+                        updateItemPermissions(directoryName, fileName, 'public-read')
+                        .then(() => {
+                            return videoHandler.updateById(video._id, { status: 'cutting', transcriptionUrl: data.TranscriptionJob.Transcript.TranscriptFileUri })
+                        })
                         .then(res => {
                             const msg = {
                                 videoId: video.videoId,

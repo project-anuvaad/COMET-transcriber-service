@@ -31,9 +31,17 @@ function saveFile(directoryName, fileName, fileStream) {
 // function getDirectoryFiles(directoryName) {
 //     return false;
 // }
-
+function updateItemPermissions(directoryName, fileName, permissions) {
+    return new Promise((resolve, reject) => {
+        S3.putObjectAcl({ Bucket: directoryName, Key: fileName, ACL: permissions}, (err) => {
+            if (err) return reject(err);
+            return resolve(true)
+        })
+    })
+}
 module.exports = {
     saveFile,
+    updateItemPermissions,
     // getFile,
     // deleteFile,
     // getDirectoryFiles,
