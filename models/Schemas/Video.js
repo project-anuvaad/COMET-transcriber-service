@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const CONVERT_STATUS_ENUM = ['transcriping', 'cutting','failed', 'done'];
+const VENDOR_ENUM = ['aws', 'gcp'];
 
 const VideoSchema = new Schema({
     videoId: String,
@@ -16,6 +17,7 @@ const VideoSchema = new Schema({
     subtitleType: String,
     transcriptionUrl: String,
     status: { type: String, enum: CONVERT_STATUS_ENUM, default: 'uploading' },
+    vendor: { type: String, enum: VENDOR_ENUM, default: 'aws' },
 })
 
 module.exports = { VideoSchema };

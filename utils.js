@@ -420,6 +420,16 @@ function extractAudioFromVideo(videoPath, targetPath) {
     })
 }
 
+function getAudioSampleRate(audioPath) {
+    return new Promise((resolve, reject) => {
+        const command = `ffprobe -loglevel error -select_streams a -show_entries stream=sample_rate -of default=noprint_wrappers=1:nokey=1 ${audioPath}`
+        exec(command, (err, stdout) => {
+            if (err) return reject(err);
+            return resolve(parseInt(stdout))
+        })
+    })
+}
+
 function cutSlidesIntoVideos(slides, videoPath) {
     return new Promise((resolve, reject) => {
         const videoCuts = [];
@@ -465,4 +475,5 @@ module.exports = {
     cleanupFiles,
     breakVideoIntoSlides,
     extractAudioFromVideo,
+    getAudioSampleRate,
 }
