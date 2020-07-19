@@ -39,9 +39,22 @@ function updateItemPermissions(directoryName, fileName, permissions) {
         })
     })
 }
+
+function getBucketLocation() {
+    return new Promise((resolve, reject) => {
+        S3.getBucketLocation({
+            Bucket: bucketName
+        }, (err, data) => {
+            if (err) return reject(err);
+            return resolve(data);
+        })
+    })
+}
+
 module.exports = {
     saveFile,
     updateItemPermissions,
+    getBucketLocation,
     // getFile,
     // deleteFile,
     // getDirectoryFiles,
