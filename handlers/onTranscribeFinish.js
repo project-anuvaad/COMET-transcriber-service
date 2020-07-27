@@ -25,11 +25,13 @@ const onTranscribeFinish = channel => (msg) => {
     let videoDuration;
     videoPath = `${path.join(__dirname, '../tmp')}/${uuid()}.${utils.getFileExtension(videoUrl)}`;
 
-    if (withSubtitle && subtitlesUrl) {
-        subtitlePath = `${path.join(__dirname, '../tmp')}/${uuid()}.${utils.getFileExtension(subtitlesUrl)}`;
+    // const downloadFilesPromise = new Promise((resolve, reject) => {
+    //     if (withSubtitle && subtitlesUrl) {
+    //         subtitlePath = `${path.join(__dirname, '../tmp')}/${uuid()}.${utils.getFileExtension(subtitlesUrl)}`;
+    //         return utils.downloadFile(subtitlesUrl, subtitlePath)
+    //     }
 
-        return utils.downloadFile(subtitlesUrl, subtitlePath)
-    }
+    // })
     console.log('download vidddeo')
     return utils.downloadFile(videoUrl, videoPath)
         .then(vpath => {
