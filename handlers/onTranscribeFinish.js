@@ -218,19 +218,3 @@ const onTranscribeFinish = (channel) => (msg) => {
 };
 
 module.exports = onTranscribeFinish;
-parsedTranscription = transcribeParser.parseSubtitle(
-  fs.readFileSync("tmp/38dc5388-aafb-428b-8815-4d12fd1a4cd8.srt", {
-    encoding: "utf8",
-  }),
-  "srt"
-);
-
-const formattedTranscription = parsedTranscription.map((t) => ({
-  start_time: t.startTime,
-  end_time: t.endTime,
-  alertnatives: [{ confidence: 1, content: t.text }],
-  type: "pronunciation",
-}));
-
-console.log(formattedTranscription);
-// fs.writeFileSync('test.json', JSON.stringify(formattedTranscription))
