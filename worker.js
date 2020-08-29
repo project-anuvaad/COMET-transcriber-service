@@ -63,8 +63,6 @@ mongoose.connect(DB_CONNECTION_URL)
         channel.consume(TRANSCRIBE_FINISH_QUEUE, onTranscribeFinishHandler(channel));
         channel.consume(TRANSCRIBE_SUBVIDEOS_QUEUE, onTranscribeSubvideos(channel));
 
-        require('./cronJobs')(channel)
-
         const { server, app } = videowikiGenerators.serverGenerator({ uploadLimit: 50 })
         
         app.get('/health', (req, res) => {
