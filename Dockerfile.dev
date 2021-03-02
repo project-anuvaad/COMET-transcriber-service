@@ -1,4 +1,4 @@
-FROM hassanamin994/node_ffmpeg
+FROM anuvaadio/node_ffmpeg
 WORKDIR /transcriber-service
 
 COPY . .
